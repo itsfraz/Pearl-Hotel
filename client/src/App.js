@@ -16,39 +16,52 @@ import BookingManagement from './components/admin/BookingManagement';
 import UserManagement from './components/admin/UserManagement';
 import DashboardStats from './components/admin/DashboardStats';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 
 const App = () => {
   return (
-    <Router>
-      <div className="app">
-        <Navbar />
-        <ToastContainer />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/rooms" element={<RoomList />} />
-            <Route path="/rooms/:id" element={<RoomDetails />} />
-            <Route path="/rooms/:id/details" element={<RoomDetails />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/amenities" element={<Amenities />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute isAdmin><AdminDashboard /></ProtectedRoute>}>
-              <Route index element={<DashboardStats />} />
-              <Route path="rooms" element={<RoomManagement />} />
-              <Route path="bookings" element={<BookingManagement />} />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="coupons" element={<div className="p-10 text-center">Coupon Management Coming Soon</div>} />
-            </Route>
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <div className="app">
+          <Navbar />
+          <ToastContainer 
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/rooms" element={<RoomList />} />
+              <Route path="/rooms/:id" element={<RoomDetails />} />
+              <Route path="/rooms/:id/details" element={<RoomDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/amenities" element={<Amenities />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute isAdmin><AdminDashboard /></ProtectedRoute>}>
+                <Route index element={<DashboardStats />} />
+                <Route path="rooms" element={<RoomManagement />} />
+                <Route path="bookings" element={<BookingManagement />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="coupons" element={<div className="p-10 text-center">Coupon Management Coming Soon</div>} />
+              </Route>
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 };
 
