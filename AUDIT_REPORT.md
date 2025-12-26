@@ -37,6 +37,7 @@
 ## 🏨 ROOMS MANAGEMENT - VERIFICATION RESULTS
 
 ### **PASSED ✓**
+
 - ✅ Room CRUD operations (Create, Read, Update, Delete)
 - ✅ Room model with all necessary fields
 - ✅ Admin-only room management
