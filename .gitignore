@@ -21,3 +21,6 @@ Thumbs.db
 # Build files
 dist
 build
+
+# Markdown lint
+.markdownlint-cli2.jsonc
