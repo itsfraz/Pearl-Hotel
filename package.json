@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/user-event": "^13.2.1",
+    "react-scripts": "^5.0.1",
+    "twilio": "^5.4.2",
+    "web-vitals": "^2.1.0"
+  },
+  "name": "pearl-hotel",
+  "description": "��#\u0000 \u0000B\u0000e\u0000d\u0000-\u0000R\u0000o\u0000c\u0000k\u0000\r\u0000 \u0000",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsfraz/Bed-Rock.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsfraz/Bed-Rock/issues"
+  },
+  "homepage": "https://github.com/itsfraz/Bed-Rock#readme"
+}
