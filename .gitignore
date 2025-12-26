@@ -1,1 +1,23 @@
 node_modules
+.env
+
+# Log files
+*.log
+*_output.txt
+
+# Test files
+*_test.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build files
+dist
+build

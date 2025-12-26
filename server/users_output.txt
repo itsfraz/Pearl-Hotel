@@ -1,5 +1,0 @@
-Users count: 4
-User: Javed Akhtar, Email: javed@gmail.com, ID: CD1251533626366
-User: Mohd Saeed, Email: sad@gmail.com, ID: JK1452145
-User: test user, Email: test@gmail.com, ID: F12345685
-User: Node Script, Email: nodescript@example.com, ID: NODE123
