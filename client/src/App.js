@@ -8,12 +8,14 @@ import Login from './components/Login';
 import Register from './components/Register';
 import ForgotPassword from './components/ForgotPassword';
 import Amenities from './components/Amenities';
+import Dining from './components/Dining';
 import Contact from './components/Contact';
 import UserProfile from './components/UserProfile';
 import AdminDashboard from './components/admin/AdminDashboard';
 import RoomManagement from './components/admin/RoomManagement';
 import BookingManagement from './components/admin/BookingManagement';
 import UserManagement from './components/admin/UserManagement';
+import MenuManagement from './components/admin/MenuManagement';
 import DashboardStats from './components/admin/DashboardStats';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -48,6 +50,7 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/amenities" element={<Amenities />} />
+              <Route path="/dining" element={<Dining />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute isAdmin><AdminDashboard /></ProtectedRoute>}>
@@ -55,6 +58,7 @@ const App = () => {
                 <Route path="rooms" element={<RoomManagement />} />
                 <Route path="bookings" element={<BookingManagement />} />
                 <Route path="users" element={<UserManagement />} />
+                <Route path="menu" element={<MenuManagement />} />
                 <Route path="coupons" element={<div className="p-10 text-center">Coupon Management Coming Soon</div>} />
               </Route>
             </Routes>

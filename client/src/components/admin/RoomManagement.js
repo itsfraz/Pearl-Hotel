@@ -2,25 +2,76 @@ import React, { useState, useEffect } from 'react';
 import roomService from '../../services/roomService';
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaBed, FaDollarSign, FaList, FaImage, FaHashtag, FaUsers, 
   FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaHotTub, FaTv, FaWind, FaCoffee, FaGlassMartini, 
-  FaBell, FaSpa, FaSnowflake, FaUtensils, FaCheck, FaRulerCombined, FaAlignLeft } from 'react-icons/fa';
-import { MdRestaurant, MdKitchen, MdBalcony } from 'react-icons/md';
+  FaBell, FaSpa, FaSnowflake, FaUtensils, FaCheck, FaRulerCombined, FaAlignLeft, FaShower, FaToilet,
+  FaPhone, FaBroom, FaLock, FaVideo, FaFire, FaExclamationTriangle, FaShieldAlt,
+  FaConciergeBell, FaClock, FaLightbulb, FaPlug, FaCouch, FaSoap, FaBath, FaSatelliteDish, 
+  FaUserShield } from 'react-icons/fa';
+import { MdRestaurant, MdKitchen, MdBalcony, MdLocalLaundryService, MdIron, 
+  MdSecurity, MdFamilyRestroom, MdSmokeFree, MdPowerSettingsNew, MdElevator } from 'react-icons/md';
+import { GiTowel, GiPillow, GiDesk } from 'react-icons/gi';
+import { BiCloset } from 'react-icons/bi';
 
+// Comprehensive Hotel Amenities List
 const AVAILABLE_AMENITIES = [
-  { name: 'WiFi', icon: FaWifi },
-  { name: 'Swimming Pool', icon: FaSwimmingPool },
-  { name: 'Restaurant', icon: MdRestaurant },
-  { name: 'Gym Access', icon: FaDumbbell },
-  { name: 'Parking', icon: FaParking },
-  { name: 'Hot Water', icon: FaHotTub },
-  { name: 'TV', icon: FaTv },
+  // 🛏️ Room Essentials
+  { name: 'Free WiFi', icon: FaWifi },
   { name: 'Air Conditioning', icon: FaWind },
+  { name: 'Comfortable Bed', icon: FaBed },
+  { name: 'Fresh Linen', icon: GiPillow },
+  { name: 'Wardrobe / Closet', icon: BiCloset },
+  { name: 'Work Desk / Table', icon: GiDesk },
+  { name: 'Seating Area', icon: FaCouch },
+  { name: 'Power Sockets', icon: FaPlug },
+  { name: 'Room Lighting', icon: FaLightbulb },
+  
+  // 🚿 Bathroom Essentials
+  { name: 'Attached Bathroom', icon: FaToilet },
+  { name: 'Hot & Cold Water', icon: FaHotTub },
+  { name: 'Towels', icon: GiTowel },
+  { name: 'Toiletries (Soap, Shampoo)', icon: FaSoap },
+  { name: 'Shower', icon: FaShower },
+  { name: 'Mirror', icon: FaBath },
+  { name: 'Bathtub', icon: FaBath },
+  
+  // 📺 Basic Comfort & Tech
+  { name: 'Flat-Screen TV', icon: FaTv },
+  { name: 'Cable / Satellite Channels', icon: FaSatelliteDish },
+  { name: 'Telephone', icon: FaPhone },
   { name: 'Mini Bar', icon: FaGlassMartini },
-  { name: 'Room Service', icon: FaBell },
-  { name: 'Spa Access', icon: FaSpa },
   { name: 'Coffee Maker', icon: FaCoffee },
   { name: 'Full Kitchen', icon: MdKitchen },
   { name: 'Private Balcony', icon: MdBalcony },
+  
+  // 🧹 Services
+  { name: 'Daily Housekeeping', icon: FaBroom },
+  { name: 'Room Service', icon: FaBell },
+  { name: 'Wake-up Call', icon: FaClock },
+  { name: 'Laundry Service', icon: MdLocalLaundryService },
+  { name: 'Iron & Ironing Board', icon: MdIron },
+  
+  // 🔐 Safety & Security
+  { name: 'Secure Door Lock', icon: FaLock },
+  { name: 'CCTV in Common Areas', icon: FaVideo },
+  { name: 'Fire Safety System', icon: FaFire },
+  { name: 'Emergency Exit Information', icon: FaExclamationTriangle },
+  { name: 'In-room Safe', icon: FaShieldAlt },
+  
+  // 🏨 Hotel-Level Amenities
+  { name: '24×7 Front Desk', icon: FaConciergeBell },
+  { name: 'Elevator / Lift', icon: MdElevator },
+  { name: 'Power Backup', icon: MdPowerSettingsNew },
+  { name: 'Parking', icon: FaParking },
+  { name: 'Security', icon: MdSecurity },
+  { name: 'Swimming Pool', icon: FaSwimmingPool },
+  { name: 'Gym Access', icon: FaDumbbell },
+  { name: 'Spa Access', icon: FaSpa },
+  { name: 'Restaurant', icon: MdRestaurant },
   { name: 'Restaurant Access', icon: FaUtensils },
+  
+  // 🌐 Booking Filter Amenities
+  { name: 'Family Rooms', icon: MdFamilyRestroom },
+  { name: 'Non-Smoking Rooms', icon: MdSmokeFree },
+  { name: 'Wheelchair Accessible', icon: FaUserShield },
 ];
 
 const RoomManagement = () => {

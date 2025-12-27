@@ -147,12 +147,12 @@ const Home = () => {
                   Explore Rooms <FaArrowRight />
                 </span>
               </Link>
-              <button 
-                onClick={() => document.getElementById('amenities').scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 bg-transparent border border-white/30 text-white rounded-full font-medium hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm"
+              <Link 
+                to="/amenities"
+                className="px-8 py-4 bg-transparent border border-white/30 text-white rounded-full font-medium hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm inline-block"
               >
                 View Amenities
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -280,9 +280,11 @@ const Home = () => {
             <div>
               <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Explore</h4>
               <ul className="space-y-3 text-sm">
-                {['Home', 'Rooms', 'Dining', 'Spa & Wellness', 'Events'].map(item => (
-                  <li key={item}><Link to="#" className="hover:text-secondary transition-colors">{item}</Link></li>
-                ))}
+                <li><Link to="/" className="hover:text-secondary transition-colors">Home</Link></li>
+                <li><Link to="/rooms" className="hover:text-secondary transition-colors">Rooms</Link></li>
+                <li><Link to="/dining" className="hover:text-secondary transition-colors">Dining</Link></li>
+                <li><Link to="/amenities" className="hover:text-secondary transition-colors">Spa & Wellness</Link></li>
+                <li><Link to="/contact" className="hover:text-secondary transition-colors">Events</Link></li>
               </ul>
             </div>
 

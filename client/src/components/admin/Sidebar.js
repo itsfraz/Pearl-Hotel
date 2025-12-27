@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaBed, FaCalendarCheck, FaTags, FaChartLine, FaUsers, FaHome } from 'react-icons/fa';
+import { FaBed, FaCalendarCheck, FaTags, FaChartLine, FaUsers, FaHome, FaUtensils } from 'react-icons/fa';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -10,6 +10,7 @@ const Sidebar = () => {
     { path: '/admin/rooms', icon: <FaBed />, label: 'Rooms' },
     { path: '/admin/bookings', icon: <FaCalendarCheck />, label: 'Bookings' },
     { path: '/admin/users', icon: <FaUsers />, label: 'Users' },
+    { path: '/admin/menu', icon: <FaUtensils />, label: 'Menu' },
     { path: '/admin/coupons', icon: <FaTags />, label: 'Coupons' },
   ];
 
@@ -19,7 +20,7 @@ const Sidebar = () => {
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-secondary font-display font-bold text-xl">
            P
         </div>
-        <span className="font-display font-bold text-xl">Pearl<span className="text-secondary">Admin</span></span>
+        <span className="font-display font-bold text-xl">Pearl<span className="text-secondary">Hotel</span></span>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-6">
