@@ -18,15 +18,28 @@ const RoomDetails = () => {
   const [checkOut, setCheckOut] = useState(new Date());
   const [isAvailable, setIsAvailable] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [bookedDateRanges, setBookedDateRanges] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchRoom = async () => {
+    const fetchRoomData = async () => {
       try {
         setLoading(true);
-        const data = await roomService.getRoomById(id);
-        setRoom(data);
+        // Fetch room details
+        const roomData = await roomService.getRoomById(id);
+        setRoom(roomData);
+
+        // Fetch booked dates for this room
+        const bookingsData = await roomService.getRoomBookings(id);
+        
+        // Convert bookings to date intervals for DatePicker
+        const ranges = bookingsData.map(booking => ({
+          start: new Date(booking.checkIn),
+          end: new Date(booking.checkOut)
+        }));
+        setBookedDateRanges(ranges);
+
         setError(null);
       } catch (err) {
         setError("Failed to fetch room details. Please try again later.");
@@ -35,7 +48,7 @@ const RoomDetails = () => {
         setLoading(false);
       }
     };
-    fetchRoom();
+    fetchRoomData();
   }, [id]);
 
   const getAmenityIcon = (amenity) => {
@@ -253,6 +266,7 @@ const RoomDetails = () => {
                        className="w-full p-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer font-sans text-slate-700 font-medium"
                        minDate={new Date()}
                        dateFormat="MMM d, yyyy"
+                       excludeDateIntervals={bookedDateRanges}
                      />
                      <FaCalendarAlt className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors pointer-events-none" />
                    </div>
@@ -265,6 +279,7 @@ const RoomDetails = () => {
                        className="w-full p-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer font-sans text-slate-700 font-medium"
                        minDate={checkIn}
                        dateFormat="MMM d, yyyy"
+                       excludeDateIntervals={bookedDateRanges}
                      />
                      <FaCalendarAlt className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors pointer-events-none" />
                    </div>
@@ -308,6 +323,7 @@ const RoomDetails = () => {
           room={room}
           checkIn={checkIn}
           checkOut={checkOut}
+          bookedDates={bookedDateRanges}
           onClose={() => setShowBookingForm(false)}
         />
       )}

@@ -13,6 +13,11 @@ const roomService = {
     return response.data;
   },
 
+  getRoomBookings: async (id) => {
+    const response = await axios.get(`${API_URL}/rooms/${id}/bookings`);
+    return response.data; // Expecting array of { checkIn, checkOut }
+  },
+
   createBooking: async (bookingData) => {
     const token = localStorage.getItem('token');
     const config = { headers: { Authorization: `Bearer ${token}` } };

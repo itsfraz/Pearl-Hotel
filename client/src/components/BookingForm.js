@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaTimes, FaCalendarAlt, FaSpinner } from 'react-icons/fa';
 
-const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initialCheckOut }) => {
+const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initialCheckOut, bookedDates = [] }) => {
   // Helper to get next day
   const getNextDay = (date) => {
     const next = new Date(date);
@@ -196,6 +196,7 @@ const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initial
                       minDate={new Date()}
                       className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-sans"
                       dateFormat="MMM d, yyyy"
+                      excludeDateIntervals={bookedDates}
                     />
                     <FaCalendarAlt className="absolute right-3 top-3.5 text-slate-400 group-hover:text-primary transition-colors" />
                   </div>
@@ -209,6 +210,7 @@ const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initial
                       minDate={booking.checkIn}
                       className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-sans"
                       dateFormat="MMM d, yyyy"
+                      excludeDateIntervals={bookedDates}
                     />
                     <FaCalendarAlt className="absolute right-3 top-3.5 text-slate-400 group-hover:text-primary transition-colors" />
                   </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
@@ -14,6 +14,7 @@ import {
   FaYoutube, FaWhatsapp, FaMapMarkerAlt, 
   FaPhone, FaEnvelope, FaClock, FaArrowRight, FaSpa, FaConciergeBell, FaSwimmingPool, FaWifi
 } from 'react-icons/fa';
+import roomService from '../services/roomService';
 
 const Home = () => {
   // Scroll to top on mount
@@ -37,29 +38,27 @@ const Home = () => {
     "/images/slider/hotel1.jpg"
   ];
 
-  const featuredRooms = [
-    {
-      _id: "1",
-      name: "Luxury Suite",
-      description: "Spacious suite with ocean view, private balcony, and jacuzzi.",
-      price: 24999,
-      images: ["/images/slider/hotel1.jpg"] 
-    },
-    {
-      _id: "2",
-      name: "Deluxe Room",
-      description: "Modern aesthetics with city skyline view and premium king bed.",
-      price: 14999,
-      images: ["/images/slider/hotel3.jpg"]
-    },
-    {
-      _id: "3",
-      name: "Family Suite",
-      description: "Two-bedroom sanctuary perfect for families, featuring a living area.",
-      price: 34999,
-      images: ["/images/slider/hotel2.jpg"]
-    }
-  ];
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const data = await roomService.getAllRooms();
+        // Assuming the API returns an array of rooms. 
+        // We can sort them or pick specific ones. For now, let's take the first 3.
+        setRooms(data);
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRooms();
+  }, []);
+
+  const featuredRooms = rooms.slice(0, 3);
 
   const testimonials = [
     {
@@ -197,9 +196,19 @@ const Home = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {featuredRooms.map((room) => (
-              <RoomCard key={room._id} room={room} />
-            ))}
+            {loading ? (
+              <div className="col-span-full flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : featuredRooms.length > 0 ? (
+              featuredRooms.map((room) => (
+                <RoomCard key={room._id} room={room} />
+              ))
+            ) : (
+              <div className="col-span-full text-center text-slate-400 py-20">
+                <p className="text-xl font-light">No rooms available at the moment.</p>
+              </div>
+            )}
           </div>
 
           <div className="text-center mt-12">

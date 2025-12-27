@@ -162,4 +162,20 @@ const deleteRoom = async (req, res) => {
     }
 };
 
-module.exports = { getRooms, getRoomById, checkAvailability, createRoom, updateRoom, deleteRoom };
+// @desc    Get all active bookings for a specific room
+// @route   GET /api/rooms/:id/bookings
+// @access  Public
+const getRoomBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({
+            room: req.params.id,
+            status: { $ne: 'Cancelled' }
+        }).select('checkIn checkOut');
+
+        res.json(bookings);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { getRooms, getRoomById, checkAvailability, createRoom, updateRoom, deleteRoom, getRoomBookings };
