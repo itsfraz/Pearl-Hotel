@@ -403,39 +403,56 @@ const RoomManagement = () => {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
            <h3 className="text-xl font-bold text-slate-800">Inventory ({rooms.length})</h3>
+           <span className="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded-md hidden md:inline-block">
+             Scroll for more details
+           </span>
         </div>
-        <div className="overflow-x-auto">
+        
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
+            <thead className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
               <tr>
-                <th className="p-4">Room No.</th>
+                <th className="p-4 pl-6">Room Details</th>
                 <th className="p-4">Type</th>
                 <th className="p-4">Capacity</th>
-                <th className="p-4">Price</th>
-                <th className="p-4 text-right">Actions</th>
+                <th className="p-4">Price / Night</th>
+                <th className="p-4 text-right pr-6">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {rooms.map(room => (
-                <tr key={room._id} className="hover:bg-blue-50/50 transition-colors">
-                  <td className="p-4 font-mono font-medium text-slate-700">{room.roomNumber}</td>
-                  <td className="p-4 font-medium text-slate-800">{room.type}</td>
-                  <td className="p-4 text-slate-600">{room.capacity} Guests</td>
-                  <td className="p-4 font-bold text-secondary-dark">₹{room.price}</td>
+                <tr key={room._id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="p-4 pl-6">
+                    <div>
+                      <div className="font-bold text-slate-800">{room.name}</div>
+                      <div className="text-xs text-slate-500 font-mono mt-0.5">#{room.roomNumber}</div>
+                    </div>
+                  </td>
                   <td className="p-4">
-                    <div className="flex justify-end gap-2">
+                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition-colors">
+                      {room.type}
+                    </span>
+                  </td>
+                  <td className="p-4 text-slate-600 flex items-center gap-2">
+                    <FaUsers className="text-slate-400" />
+                    {room.capacity}
+                  </td>
+                  <td className="p-4 font-bold text-slate-800">₹{room.price.toLocaleString()}</td>
+                  <td className="p-4 pr-6">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                        <button 
                          onClick={() => { setSelectedRoom(room); document.getElementById('roomForm').scrollIntoView({ behavior: 'smooth' }); }} 
-                         className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors"
+                         className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
                          title="Edit"
                        >
                          <FaEdit />
                        </button>
                        <button 
                          onClick={() => handleDelete(room._id)} 
-                         className="w-8 h-8 rounded-full bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-colors"
+                         className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
                          title="Delete"
                        >
                          <FaTrash />
@@ -446,11 +463,66 @@ const RoomManagement = () => {
               ))}
               {rooms.length === 0 && (
                 <tr>
-                   <td colSpan="5" className="p-8 text-center text-slate-400">No rooms found. Add one above.</td>
+                   <td colSpan="5" className="p-12 text-center text-slate-400">
+                     <div className="flex flex-col items-center gap-2">
+                       <FaBed className="text-4xl opacity-20" />
+                       <p>No rooms found. Add your first room above.</p>
+                     </div>
+                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden grid grid-cols-1 gap-4 p-4 bg-slate-50">
+           {rooms.map(room => (
+             <div key={room._id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                   <div>
+                      <h4 className="font-bold text-slate-800">{room.name}</h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">#{room.roomNumber}</span>
+                        <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">{room.type}</span>
+                      </div>
+                   </div>
+                   <span className="font-bold text-slate-800 text-lg">₹{room.price.toLocaleString()}</span>
+                </div>
+                
+                <div className="flex items-center gap-4 text-sm text-slate-500 mb-4 border-t border-b border-slate-50 py-2">
+                   <div className="flex items-center gap-1.5">
+                      <FaUsers className="text-slate-400" /> 
+                      {room.capacity} Guests
+                   </div>
+                   <div className="flex items-center gap-1.5">
+                      <FaRulerCombined className="text-slate-400" />
+                      {room.size || 'N/A'}
+                   </div>
+                </div>
+
+                <div className="flex gap-2">
+                   <button 
+                     onClick={() => { setSelectedRoom(room); document.getElementById('roomForm').scrollIntoView({ behavior: 'smooth' }); }} 
+                     className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg font-semibold text-sm hover:bg-blue-100 transition-colors flex items-center justify-center gap-2"
+                   >
+                     <FaEdit /> Edit
+                   </button>
+                   <button 
+                     onClick={() => handleDelete(room._id)} 
+                     className="flex-1 py-2 bg-red-50 text-red-600 rounded-lg font-semibold text-sm hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+                   >
+                     <FaTrash /> Delete
+                   </button>
+                </div>
+             </div>
+           ))}
+           {rooms.length === 0 && (
+             <div className="text-center p-8 text-slate-400">
+                <FaBed className="text-4xl mx-auto mb-2 opacity-20" />
+                No rooms found.
+             </div>
+           )}
         </div>
       </div>
     </div>

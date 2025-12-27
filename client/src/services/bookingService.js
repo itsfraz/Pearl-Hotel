@@ -48,6 +48,15 @@ const bookingService = {
     };
     const response = await axios.get(`${API_URL}/bookings/admin`, config);
     return response.data;
+  },
+
+  updateStatus: async (id, status) => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+    const response = await axios.put(`${API_URL}/bookings/${id}/status`, { status }, config);
+    return response.data;
   }
 };
 

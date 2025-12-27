@@ -16,6 +16,7 @@ import RoomManagement from './components/admin/RoomManagement';
 import BookingManagement from './components/admin/BookingManagement';
 import UserManagement from './components/admin/UserManagement';
 import MenuManagement from './components/admin/MenuManagement';
+import CouponManagement from './components/admin/CouponManagement';
 import DashboardStats from './components/admin/DashboardStats';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -59,7 +60,7 @@ const App = () => {
                 <Route path="bookings" element={<BookingManagement />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="menu" element={<MenuManagement />} />
-                <Route path="coupons" element={<div className="p-10 text-center">Coupon Management Coming Soon</div>} />
+                <Route path="coupons" element={<CouponManagement />} />
               </Route>
             </Routes>
           </main>

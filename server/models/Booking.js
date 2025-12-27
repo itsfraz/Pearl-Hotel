@@ -74,6 +74,12 @@ const bookingSchema = mongoose.Schema({
         default: 0,
         min: 0 
     },
+    addOns: [{
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, default: 1 },
+        totalPrice: { type: Number, required: true }
+    }],
 }, { 
     timestamps: true,
     // Add compound indexes for common queries

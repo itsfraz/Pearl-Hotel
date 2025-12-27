@@ -9,7 +9,7 @@ const createBooking = async (req, res) => {
     console.log("Create Booking Request Body:", req.body);
     const { 
         room, checkIn, checkOut, adults, children, youngChildren, 
-        specialRequests, totalPrice, paymentId, orderId, paymentStatus, couponCode 
+        specialRequests, totalPrice, paymentId, orderId, paymentStatus, couponCode, addOns 
     } = req.body;
 
     try {
@@ -83,7 +83,9 @@ const createBooking = async (req, res) => {
             paymentId,
             orderId,
             paymentStatus: paymentStatus || 'Pending',
-            status: paymentStatus === 'Paid' ? 'Confirmed' : 'Pending'
+            paymentStatus: paymentStatus || 'Pending',
+            status: paymentStatus === 'Paid' ? 'Confirmed' : 'Pending',
+            addOns
         };
         console.log("Booking Data to Save:", bookingData);
 
@@ -123,6 +125,30 @@ const cancelBooking = async (req, res) => {
     }
 };
 
+// @desc    Update booking status (Admin)
+// @route   PUT /api/bookings/:id/status
+// @access  Private/Admin
+const updateBookingStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        booking.status = status;
+        if (status === 'Confirmed' || status === 'Completed') {
+            booking.paymentStatus = 'Paid';
+        }
+        
+        await booking.save();
+        res.json(booking);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Get all bookings (Admin)
 // @route   GET /api/bookings/admin
 // @access  Private/Admin
@@ -150,6 +176,53 @@ const getBookings = async (req, res) => {
     }
 };
 
+// @desc    Get booking statistics (Admin)
+// @route   GET /api/bookings/stats
+// @access  Private/Admin
+const getBookingStats = async (req, res) => {
+    try {
+        const totalBookings = await Booking.countDocuments();
+        const totalRevenue = await Booking.aggregate([
+            { $match: { status: { $ne: 'Cancelled' } } },
+            { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+        ]);
+        
+        // Monthly Revenue (Last 6 months)
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        
+        const monthlyRevenue = await Booking.aggregate([
+            { 
+                $match: { 
+                    createdAt: { $gte: sixMonthsAgo },
+                    status: { $ne: 'Cancelled' }
+                } 
+            },
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    revenue: { $sum: "$totalPrice" },
+                    bookings: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        const  statusCounts = await Booking.aggregate([
+            { $group: { _id: "$status", count: { $sum: 1 } } }
+        ]);
+
+        res.json({
+            totalBookings,
+            totalRevenue: totalRevenue[0]?.total || 0,
+            monthlyRevenue,
+            statusCounts
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Get a single booking by ID
 // @route   GET /api/bookings/:id
 // @access  Private
@@ -167,4 +240,4 @@ const getBookingById = async (req, res) => {
     }
 };
 
-module.exports = { createBooking, getBookings, getBookingById, cancelBooking, getAllBookings };
+module.exports = { createBooking, getBookings, getBookingById, cancelBooking, getAllBookings, getBookingStats, updateBookingStatus };

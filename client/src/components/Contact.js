@@ -1,10 +1,27 @@
 import React, { useEffect } from 'react';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaFacebookF, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Fix for default marker icon in React-Leaflet
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const Contact = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
+
+    const position = [19.0760, 72.8777]; // Mumbai Coordinates
 
     const contactInfo = [
         {
@@ -112,14 +129,21 @@ const Contact = () => {
 
                         <div className="relative z-10 mt-12">
                             <h3 className="text-xl font-display font-bold mb-4">Location</h3>
-                            <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-800 border border-white/10">
-                                {/* Placeholder for Map */}
-                                <div className="w-full h-full flex items-center justify-center text-slate-500 bg-white/5">
-                                    <div className="text-center">
-                                         <FaMapMarkerAlt className="text-3xl mx-auto mb-2 opacity-50" />
-                                         <p className="text-sm">Google Map Integration</p>
-                                    </div>
-                                </div>
+                            <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-800 border border-white/10 relative z-0">
+                                <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%' }}>
+                                    <TileLayer
+                                        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                                    />
+                                    <Marker position={position}>
+                                        <Popup>
+                                            <div className="font-sans text-center">
+                                                <strong className="text-primary text-lg block mb-1">Pearl Hotel</strong>
+                                                123 Luxury Avenue, Mumbai
+                                            </div>
+                                        </Popup>
+                                    </Marker>
+                                </MapContainer>
                             </div>
                         </div>
                     </div>
