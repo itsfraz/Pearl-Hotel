@@ -417,15 +417,15 @@ const Dining = () => {
                       )}
 
                       {/* Action Button */}
-                      <Link 
-                        to="/contact"
+                      <a 
+                        href="#reservations"
                         className="block w-full py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl hover:from-secondary hover:to-secondary-dark transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-secondary/30 transform hover:-translate-y-0.5 group/btn"
                       >
                         <span className="flex items-center justify-center gap-2">
                           Place Order
                           <FaChevronRight className="text-sm group-hover/btn:translate-x-1 transition-transform" />
                         </span>
-                      </Link>
+                      </a>
                     </div>
 
                     {/* Decorative Corner Accent */}

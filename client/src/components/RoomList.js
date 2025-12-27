@@ -138,6 +138,7 @@ const RoomList = () => {
                   <option value="Suite">Suite</option>
                   <option value="Deluxe">Deluxe</option>
                   <option value="Standard">Standard</option>
+                  <option value="Simple">Simple</option>
                 </select>
                 <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs" />
               </div>
