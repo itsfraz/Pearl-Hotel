@@ -6,6 +6,7 @@ import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/pagination';
 import RoomCard from "./RoomCard";
+import RoomCardSkeleton from "./common/RoomCardSkeleton";
 import BookingWidget from "./BookingWidget";
 import VirtualTour from "./VirtualTour";
 import Gallery from "./Gallery";
@@ -197,8 +198,10 @@ const Home = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {loading ? (
-              <div className="col-span-full flex justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              <div className="col-span-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {[1, 2, 3].map((n) => (
+                  <RoomCardSkeleton key={n} />
+                ))}
               </div>
             ) : featuredRooms.length > 0 ? (
               featuredRooms.map((room) => (

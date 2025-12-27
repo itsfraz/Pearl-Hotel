@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import RoomCard from "./RoomCard";
+import RoomCardSkeleton from "./common/RoomCardSkeleton";
 import roomService from '../services/roomService';
-import { FaWifi, FaSwimmingPool, FaUtensils, FaDumbbell, FaParking, FaHotTub, FaTv, FaWind, FaChevronDown, FaChevronUp, FaFilter } from 'react-icons/fa';
+import { FaFilter, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const RoomList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(false);
-  const [expandedAmenities, setExpandedAmenities] = useState({});
   const amenitiesRef = useRef(null);
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const location = useLocation();
@@ -70,19 +70,14 @@ const RoomList = () => {
     }));
   };
 
-  // Mock filtering since real amenities aren't in the object above for all rooms
-  // In a real app the rooms object would be fuller or fetched from API
   const filteredRooms = rooms.filter((room) => {
     const typeMatch = filter.type === "all" || room.type === filter.type;
     const priceMatch = room.price <= filter.maxPrice;
     const capacityMatch = room.capacity >= filter.capacity;
-    // For demo purposes, since amenities aren't in the state rooms object in this snippet, 
-    // we skip the strict amenity check or assume true if the field is missing.
-    // In production, ensure room.amenities exists.
     return typeMatch && priceMatch && capacityMatch; 
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (amenitiesRef.current && !amenitiesRef.current.contains(event.target)) {
         setIsAmenitiesOpen(false);
@@ -234,8 +229,10 @@ const RoomList = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <RoomCardSkeleton key={n} />
+            ))}
           </div>
         ) : error ? (
           <div className="text-center py-12 px-6 bg-red-50 rounded-2xl border border-red-100 max-w-lg mx-auto">

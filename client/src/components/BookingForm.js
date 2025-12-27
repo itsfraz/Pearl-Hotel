@@ -450,7 +450,7 @@ const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initial
         </div>
 
         {/* Content */}
-        <div className="p-8 overflow-y-auto custom-scrollbar flex-1">
+        <div className="p-4 md:p-8 overflow-y-auto custom-scrollbar flex-1">
             <form onSubmit={handleSubmit} id="booking-form">
                 {step === 1 && renderStepOne()}
                 {step === 2 && renderStepTwo()}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import BookingForm from "./BookingForm";
+import RoomDetailsSkeleton from "./common/RoomDetailsSkeleton";
 import roomService from '../services/roomService';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -111,11 +112,7 @@ const RoomDetails = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-surface-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <RoomDetailsSkeleton />;
   }
 
   if (error || !room) {

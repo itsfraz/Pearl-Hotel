@@ -11,17 +11,6 @@ const ImageCarousel = ({ images, alt, onImageClick, className = '' }) => {
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
-  useEffect(() => {
-    // Preload images
-    images.forEach((src, index) => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        setIsLoaded(prev => ({ ...prev, [index]: true }));
-      };
-    });
-  }, [images]);
-
   const goToNext = (e) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -116,7 +105,8 @@ const ImageCarousel = ({ images, alt, onImageClick, className = '' }) => {
                 ${isLoaded[index] ? 'opacity-100' : 'opacity-0'}
                 group-hover:scale-105`}
               onClick={() => onImageClick?.(index)}
-              loading="lazy"
+              onLoad={() => setIsLoaded(prev => ({ ...prev, [index]: true }))}
+              loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
             />
             
