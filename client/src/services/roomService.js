@@ -18,6 +18,11 @@ const roomService = {
     return response.data; // Expecting array of { checkIn, checkOut }
   },
 
+  checkAvailability: async (availabilityData) => {
+    const response = await axios.post(`${API_URL}/rooms/check-availability`, availabilityData);
+    return response.data;
+  },
+
   createBooking: async (bookingData) => {
     const token = localStorage.getItem('token');
     const config = { headers: { Authorization: `Bearer ${token}` } };

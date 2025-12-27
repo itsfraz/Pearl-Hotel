@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaWifi, FaSwimmingPool, FaUtensils, FaDumbbell, FaParking, FaHotTub, FaTv, FaWind, 
   FaBed, FaChevronLeft, FaChevronRight, FaCoffee, FaGlassMartini, 
-  FaBell, FaSpa, FaSnowflake, FaCalendarAlt } from 'react-icons/fa';
+  FaBell, FaSpa, FaSnowflake, FaCalendarAlt, FaSpinner } from 'react-icons/fa';
 import { MdPeople, MdRestaurant, MdKingBed, MdBalcony, MdKitchen } from 'react-icons/md';
 
 const RoomDetails = () => {
@@ -16,7 +16,9 @@ const RoomDetails = () => {
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [checkIn, setCheckIn] = useState(new Date());
   const [checkOut, setCheckOut] = useState(new Date());
-  const [isAvailable, setIsAvailable] = useState(true);
+  const [isAvailable, setIsAvailable] = useState(null); // 'true', 'false', or null
+  const [availabilityMessage, setAvailabilityMessage] = useState('');
+  const [checking, setChecking] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [bookedDateRanges, setBookedDateRanges] = useState([]);
   const { id } = useParams();
@@ -81,6 +83,31 @@ const RoomDetails = () => {
       currency: 'INR',
       maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  const handleCheckAvailability = async () => {
+    if (!checkIn || !checkOut) return;
+    
+    setChecking(true);
+    setAvailabilityMessage('');
+    setIsAvailable(null);
+
+    try {
+      const res = await roomService.checkAvailability({
+        roomId: room._id,
+        checkIn,
+        checkOut
+      });
+      
+      setIsAvailable(res.available);
+      setAvailabilityMessage(res.message);
+    } catch (error) {
+      console.error(error);
+      setAvailabilityMessage('Error checking availability');
+      setIsAvailable(false);
+    } finally {
+      setChecking(false);
+    }
   };
 
   if (loading) {
@@ -289,21 +316,28 @@ const RoomDetails = () => {
                  <div className="pt-4 space-y-3">
                    <button
                      className="w-full py-4 bg-white border-2 border-primary text-primary rounded-xl font-bold hover:bg-surface-50 transition-all duration-300 flex items-center justify-center gap-2"
-                     onClick={() => setIsAvailable(true)}
+                     onClick={handleCheckAvailability}
+                     disabled={checking}
                    >
-                     Check Availability
+                     {checking ? <FaSpinner className="animate-spin" /> : 'Check Availability'}
                    </button>
                    
-                   {!isAvailable && (
+                   {isAvailable === false && (
                       <div className="p-3 bg-red-50 text-red-600 text-sm text-center rounded-lg animate-fade-in border border-red-100">
-                        Dates are unavailable. Please try different dates.
+                        {availabilityMessage || "Dates are unavailable. Please try different dates."}
+                      </div>
+                   )}
+
+                   {isAvailable === true && (
+                      <div className="p-3 bg-green-50 text-green-600 text-sm text-center rounded-lg animate-fade-in border border-green-100">
+                        Room is available!
                       </div>
                    )}
 
                    <button
                      className="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-slate-800 transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none bg-[length:200%_auto] hover:bg-right"
                      onClick={() => setShowBookingForm(true)}
-                     disabled={!isAvailable}
+                     disabled={isAvailable !== true}
                    >
                      Book Now
                    </button>
