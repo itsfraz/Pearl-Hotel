@@ -90,8 +90,8 @@ const Navbar = () => {
     <nav 
       className={`fixed w-full top-0 left-0 z-50 transition-all duration-500 ease-out
         ${isScrolled || isMobileMenuOpen 
-          ? "bg-white/95 backdrop-blur-xl shadow-lg border-b border-slate-200/50 py-3" 
-          : "bg-gradient-to-b from-black/30 to-transparent backdrop-blur-sm py-5"
+          ? "bg-white shadow-lg border-b border-slate-200/50 py-3" 
+          : "bg-white shadow-md py-3 lg:bg-gradient-to-b lg:from-black/50 lg:to-transparent lg:shadow-none lg:py-5 lg:backdrop-blur-sm"
         }`}
     >
       <div className="container mx-auto px-6 md:px-12 lg:px-16">
@@ -109,12 +109,12 @@ const Navbar = () => {
             </div>
             <div className="flex flex-col -space-y-1">
               <span className={`font-display font-bold text-2xl tracking-tight transition-all duration-300
-                ${isScrolled || isMobileMenuOpen ? "text-primary" : "text-white drop-shadow-lg"}
+                ${isScrolled || isMobileMenuOpen ? "text-primary" : "text-primary lg:text-white lg:drop-shadow-lg"}
               `}>
                 Pearl<span className="text-secondary">Hotel</span>
               </span>
               <span className={`text-[10px] font-medium tracking-widest uppercase transition-all duration-300
-                ${isScrolled || isMobileMenuOpen ? "text-slate-500" : "text-white/80"}
+                ${isScrolled || isMobileMenuOpen ? "text-slate-500" : "text-slate-500 lg:text-white/80"}
               `}>
                 Luxury & Comfort
               </span>
@@ -244,7 +244,7 @@ const Navbar = () => {
             className={`lg:hidden p-2.5 rounded-lg text-2xl transition-all duration-300
               ${isScrolled || isMobileMenuOpen 
                 ? "text-primary hover:bg-slate-100" 
-                : "text-white hover:bg-white/10"
+                : "text-primary hover:bg-slate-100 lg:text-white lg:hover:bg-white/10"
               }
             `}
           >
@@ -254,7 +254,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div
-          className={`lg:hidden absolute top-full left-0 w-full bg-white/98 backdrop-blur-xl border-b border-slate-200 shadow-2xl transition-all duration-500 origin-top overflow-hidden
+          className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-2xl transition-all duration-500 origin-top overflow-hidden
             ${isMobileMenuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}
           `}
         >
@@ -294,6 +294,30 @@ const Navbar = () => {
               `}
             >
               Spa
+            </Link>
+            <Link 
+              to="/dining" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className={`text-lg font-semibold px-4 py-3 rounded-xl transition-all duration-300
+                ${location.pathname === '/dining' 
+                  ? 'bg-secondary/10 text-secondary' 
+                  : 'text-slate-700 hover:bg-slate-50 hover:text-primary'
+                }
+              `}
+            >
+              Dining
+            </Link>
+            <Link 
+              to="/events" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className={`text-lg font-semibold px-4 py-3 rounded-xl transition-all duration-300
+                ${location.pathname === '/events' 
+                  ? 'bg-secondary/10 text-secondary' 
+                  : 'text-slate-700 hover:bg-slate-50 hover:text-primary'
+                }
+              `}
+            >
+              Events
             </Link>
             <Link 
               to="/contact" 
