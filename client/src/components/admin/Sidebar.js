@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaBed, FaCalendarCheck, FaTags, FaChartLine, FaUsers, FaHome, FaUtensils, FaSpa } from 'react-icons/fa';
+import { FaBed, FaCalendarCheck, FaTags, FaChartLine, FaUsers, FaHome, FaUtensils, FaSpa, FaGlassCheers } from 'react-icons/fa';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -11,6 +11,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/admin/bookings', icon: <FaCalendarCheck />, label: 'Bookings' },
     { path: '/admin/users', icon: <FaUsers />, label: 'Users' },
     { path: '/admin/spa-services', icon: <FaSpa />, label: 'Spa Services' },
+    { path: '/admin/events', icon: <FaGlassCheers />, label: 'Events' },
     { path: '/admin/menu', icon: <FaUtensils />, label: 'Menu' },
     { path: '/admin/coupons', icon: <FaTags />, label: 'Coupons' },
   ];

@@ -11,6 +11,7 @@ import Amenities from './components/Amenities';
 import Dining from './components/Dining';
 import Contact from './components/Contact';
 import Spa from './components/Spa';
+import Events from './components/Events';
 import UserProfile from './components/UserProfile';
 import AdminDashboard from './components/admin/AdminDashboard';
 import RoomManagement from './components/admin/RoomManagement';
@@ -19,6 +20,7 @@ import UserManagement from './components/admin/UserManagement';
 import MenuManagement from './components/admin/MenuManagement';
 import CouponManagement from './components/admin/CouponManagement';
 import SpaServiceManagement from './components/admin/SpaServiceManagement';
+import EventManagement from './components/admin/EventManagement';
 import DashboardStats from './components/admin/DashboardStats';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -49,6 +51,8 @@ const App = () => {
               <Route path="/rooms" element={<RoomList />} />
               <Route path="/rooms/:id" element={<RoomDetails />} />
               <Route path="/rooms/:id/details" element={<RoomDetails />} />
+              <Route path="/spa" element={<Spa />} />
+              <Route path="/events" element={<Events />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -64,6 +68,7 @@ const App = () => {
                 <Route path="users" element={<UserManagement />} />
                 <Route path="menu" element={<MenuManagement />} />
                 <Route path="spa-services" element={<SpaServiceManagement />} />
+                <Route path="events" element={<EventManagement />} />
                 <Route path="coupons" element={<CouponManagement />} />
               </Route>
             </Routes>

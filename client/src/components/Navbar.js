@@ -125,7 +125,9 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center space-x-1">
             <NavLink to="/">HOME</NavLink>
             <NavLink to="/rooms">ROOMS</NavLink>
+            <NavLink to="/dining">DINING</NavLink>
             <NavLink to="/spa">SPA</NavLink>
+            <NavLink to="/events">EVENTS</NavLink>
             <NavLink to="/contact">CONTACT</NavLink>
             
             <div className={`w-px h-6 mx-4 transition-colors duration-300
