@@ -10,6 +10,7 @@ import ForgotPassword from './components/ForgotPassword';
 import Amenities from './components/Amenities';
 import Dining from './components/Dining';
 import Contact from './components/Contact';
+import Spa from './components/Spa';
 import UserProfile from './components/UserProfile';
 import AdminDashboard from './components/admin/AdminDashboard';
 import RoomManagement from './components/admin/RoomManagement';
@@ -17,6 +18,7 @@ import BookingManagement from './components/admin/BookingManagement';
 import UserManagement from './components/admin/UserManagement';
 import MenuManagement from './components/admin/MenuManagement';
 import CouponManagement from './components/admin/CouponManagement';
+import SpaServiceManagement from './components/admin/SpaServiceManagement';
 import DashboardStats from './components/admin/DashboardStats';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -53,6 +55,7 @@ const App = () => {
               <Route path="/amenities" element={<Amenities />} />
               <Route path="/dining" element={<Dining />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/spa" element={<Spa />} />
               <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute isAdmin><AdminDashboard /></ProtectedRoute>}>
                 <Route index element={<DashboardStats />} />
@@ -60,6 +63,7 @@ const App = () => {
                 <Route path="bookings" element={<BookingManagement />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="menu" element={<MenuManagement />} />
+                <Route path="spa-services" element={<SpaServiceManagement />} />
                 <Route path="coupons" element={<CouponManagement />} />
               </Route>
             </Routes>

@@ -295,7 +295,7 @@ const Home = () => {
                 <li><Link to="/" className="hover:text-secondary transition-colors">Home</Link></li>
                 <li><Link to="/rooms" className="hover:text-secondary transition-colors">Rooms</Link></li>
                 <li><Link to="/dining" className="hover:text-secondary transition-colors">Dining</Link></li>
-                <li><Link to="/amenities" className="hover:text-secondary transition-colors">Spa & Wellness</Link></li>
+                <li><Link to="/spa" className="hover:text-secondary transition-colors">Spa & Wellness</Link></li>
                 <li><Link to="/contact" className="hover:text-secondary transition-colors">Events</Link></li>
               </ul>
             </div>

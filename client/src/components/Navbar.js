@@ -125,6 +125,7 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center space-x-1">
             <NavLink to="/">HOME</NavLink>
             <NavLink to="/rooms">ROOMS</NavLink>
+            <NavLink to="/spa">SPA</NavLink>
             <NavLink to="/contact">CONTACT</NavLink>
             
             <div className={`w-px h-6 mx-4 transition-colors duration-300
@@ -279,6 +280,18 @@ const Navbar = () => {
               `}
             >
               Rooms
+            </Link>
+            <Link 
+              to="/spa" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className={`text-lg font-semibold px-4 py-3 rounded-xl transition-all duration-300
+                ${location.pathname === '/spa' 
+                  ? 'bg-secondary/10 text-secondary' 
+                  : 'text-slate-700 hover:bg-slate-50 hover:text-primary'
+                }
+              `}
+            >
+              Spa
             </Link>
             <Link 
               to="/contact" 
