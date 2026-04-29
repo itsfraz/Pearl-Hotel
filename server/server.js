@@ -13,6 +13,7 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const spaRoutes = require('./routes/spaRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const invoiceRoutes = require('./routes/invoiceRoutes');
 
 connectDB();
 
@@ -29,6 +30,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/spa', spaRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/invoices', invoiceRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

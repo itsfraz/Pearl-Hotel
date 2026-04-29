@@ -94,18 +94,21 @@ const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initial
 
   const calculateBasePrice = () => {
     const nights = getNights();
-    const guests = getGuestCount();
-    const guestMultiplier = 1 + (Math.max(0, guests - 1) * 0.5);
-    return Math.round(nights * room.price * guestMultiplier);
+    return Math.round(nights * room.price);
+  };
+
+  const getYoungChildrenSurcharge = () => {
+    const nights = getNights();
+    const extraChildren = Math.max(0, booking.youngChildren - 2);
+    return Math.round(extraChildren * (room.price * 0.5) * nights);
   };
 
   const calculateAddonPrice = (addon) => {
     const nights = getNights();
-    const guests = getGuestCount();
     
     switch (addon.type) {
-      case 'per_person_per_night': return addon.price * guests * nights;
-      case 'per_person': return addon.price * guests;
+      case 'per_person_per_night': return addon.price * nights;
+      case 'per_person': return addon.price;
       case 'per_stay': // Fallthrough
       case 'one_time': return addon.price;
       default: return addon.price;
@@ -122,7 +125,7 @@ const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initial
   };
 
   const getTotalPrice = () => {
-    return calculateBasePrice() + getTotalAddonPrice();
+    return calculateBasePrice() + getTotalAddonPrice() + getYoungChildrenSurcharge();
   };
 
   // Handlers
@@ -267,7 +270,7 @@ const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initial
                 {type.replace(/([A-Z])/g, ' $1').trim()}
                 </span>
                 <span className="text-xs text-slate-400">
-                {type === 'adults' ? 'Age 13+' : type === 'children' ? 'Age 6-12' : 'Under 5 (Free)'}
+                {type === 'adults' ? 'Age 13+' : type === 'children' ? 'Age 6-12' : 'Under 5 (First 2 free)'}
                 </span>
             </div>
             <div className="flex items-center space-x-3">
@@ -366,6 +369,13 @@ const BookingForm = ({ room, onClose, checkIn: initialCheckIn, checkOut: initial
                     <span className="text-slate-600">Room Charges</span>
                     <span className="font-medium">{formatPrice(calculateBasePrice())}</span>
                 </div>
+                
+                {getYoungChildrenSurcharge() > 0 && (
+                    <div className="flex justify-between text-sm text-amber-600 font-medium bg-amber-50 p-2 rounded-lg mt-2 border border-amber-100">
+                        <span>Extra Child Surcharge ({booking.youngChildren - 2} × 50% room rate)</span>
+                        <span>{formatPrice(getYoungChildrenSurcharge())}</span>
+                    </div>
+                )}
                 
                 {selectedAddons.size > 0 && (
                     <div className="border-t border-slate-100 pt-2 mt-2 space-y-2">

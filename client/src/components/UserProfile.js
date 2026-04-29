@@ -75,6 +75,48 @@ const UserProfile = () => {
         }
     };
 
+    const handleDownloadInvoice = async (bookingId) => {
+        try {
+            const token = authService.getToken();
+            const config = {
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: 'blob'
+            };
+            
+            const res = await axios.get(`${API_URL}/invoices/${bookingId}/download`, config);
+            
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `invoice_${bookingId.substring(0, 8).toUpperCase()}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            toast.success("Invoice downloaded successfully!");
+        } catch (error) {
+            console.error("Download error:", error);
+            
+            let errorMsg = "It may not be available yet.";
+            if (error.response) {
+                if (error.response.data instanceof Blob) {
+                    try {
+                        const text = await error.response.data.text();
+                        const json = JSON.parse(text);
+                        errorMsg = json.message || text;
+                    } catch (e) {
+                        errorMsg = `Status ${error.response.status}`;
+                    }
+                } else {
+                    errorMsg = error.response.data.message || `Status ${error.response.status}`;
+                }
+            } else {
+                errorMsg = error.message;
+            }
+            
+            toast.error(`Failed to download invoice: ${errorMsg}`);
+        }
+    };
+
     const getStatusBadge = (status) => {
         const badges = {
             'Confirmed': 'px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase',
@@ -281,9 +323,14 @@ const UserProfile = () => {
                                                         Cancel Booking
                                                     </button>
                                                 )}
-                                                <button className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-2">
-                                                    <FaDownload /> Invoice
-                                                </button>
+                                                {(booking.status === 'Confirmed' || booking.status === 'Completed') && (
+                                                    <button 
+                                                        onClick={() => handleDownloadInvoice(booking._id)}
+                                                        className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                                    >
+                                                        <FaDownload /> Invoice
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
