@@ -75,8 +75,12 @@ const UserProfile = () => {
         }
     };
 
+    const [downloadingInvoice, setDownloadingInvoice] = useState(null);
+
     const handleDownloadInvoice = async (bookingId) => {
+        console.log("Download Invoice clicked for booking:", bookingId);
         try {
+            setDownloadingInvoice(bookingId);
             const token = authService.getToken();
             const config = {
                 headers: { Authorization: `Bearer ${token}` },
@@ -84,14 +88,16 @@ const UserProfile = () => {
             };
             
             const res = await axios.get(`${API_URL}/invoices/${bookingId}/download`, config);
+            console.log("Invoice data received, size:", res.data.size);
             
-            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', `invoice_${bookingId.substring(0, 8).toUpperCase()}.pdf`);
             document.body.appendChild(link);
             link.click();
-            link.remove();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
             toast.success("Invoice downloaded successfully!");
         } catch (error) {
             console.error("Download error:", error);
@@ -114,6 +120,8 @@ const UserProfile = () => {
             }
             
             toast.error(`Failed to download invoice: ${errorMsg}`);
+        } finally {
+            setDownloadingInvoice(null);
         }
     };
 
@@ -325,10 +333,20 @@ const UserProfile = () => {
                                                 )}
                                                 {(booking.status === 'Confirmed' || booking.status === 'Completed') && (
                                                     <button 
-                                                        onClick={() => handleDownloadInvoice(booking._id)}
-                                                        className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleDownloadInvoice(booking._id);
+                                                        }}
+                                                        disabled={downloadingInvoice === booking._id}
+                                                        className={`px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-2 ${downloadingInvoice === booking._id ? 'opacity-70 cursor-wait' : ''}`}
                                                     >
-                                                        <FaDownload /> Invoice
+                                                        {downloadingInvoice === booking._id ? (
+                                                            <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        ) : (
+                                                            <FaDownload />
+                                                        )}
+                                                        {downloadingInvoice === booking._id ? 'Downloading...' : 'Invoice'}
                                                     </button>
                                                 )}
                                             </div>

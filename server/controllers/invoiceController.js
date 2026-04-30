@@ -56,26 +56,29 @@ const downloadInvoice = async (req, res) => {
 
         doc.moveTo(50, 110).lineTo(550, 110).stroke();
 
+        const generatedDate = invoice.generatedAt ? new Date(invoice.generatedAt).toLocaleDateString() : new Date().toLocaleDateString();
+
         // Invoice Details
         doc.fontSize(20).text('INVOICE', 50, 130);
         doc.fontSize(10)
-           .text(`Invoice Number: ${invoice.invoiceNumber}`, 50, 160)
-           .text(`Invoice Date: ${invoice.generatedAt.toLocaleDateString()}`, 50, 175)
-           .text(`Booking ID: ${booking._id}`, 50, 190)
-           .text(`Payment Status: ${booking.paymentStatus}`, 50, 205);
+           .text(`Invoice Number: ${invoice.invoiceNumber || 'N/A'}`, 50, 160)
+           .text(`Invoice Date: ${generatedDate}`, 50, 175)
+           .text(`Booking ID: ${booking._id || 'N/A'}`, 50, 190)
+           .text(`Payment Status: ${booking.paymentStatus || 'Pending'}`, 50, 205);
 
         // User Details
-        const firstName = booking.user ? booking.user.firstName : 'Guest';
-        const lastName = booking.user ? booking.user.lastName : '';
-        const email = booking.user ? booking.user.email : '';
-        const phone = booking.user ? (booking.user.phone || '') : '';
+        const firstName = booking.user?.firstName || 'Guest';
+        const lastName = booking.user?.lastName || '';
+        const email = booking.user?.email || '';
+        const phone = booking.user?.phone || '';
 
         doc.text('Bill To:', 300, 160)
            .font('Helvetica-Bold')
-           .text(`${firstName} ${lastName}`, 300, 175)
-           .font('Helvetica')
-           .text(email, 300, 190)
-           .text(phone, 300, 205);
+           .text(`${firstName} ${lastName}`.trim(), 300, 175)
+           .font('Helvetica');
+           
+        if (email) doc.text(email, 300, 190);
+        if (phone) doc.text(phone, 300, 205);
 
         doc.moveTo(50, 230).lineTo(550, 230).stroke();
 
@@ -91,15 +94,19 @@ const downloadInvoice = async (req, res) => {
         
         y += 25;
         
-        const checkIn = new Date(booking.checkIn).toLocaleDateString();
-        const checkOut = new Date(booking.checkOut).toLocaleDateString();
-        const nights = Math.max(1, Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24)));
+        const checkIn = booking.checkIn ? new Date(booking.checkIn).toLocaleDateString() : 'N/A';
+        const checkOut = booking.checkOut ? new Date(booking.checkOut).toLocaleDateString() : 'N/A';
         
-        const roomName = booking.room ? booking.room.name : 'Room';
+        let nights = 1;
+        if (booking.checkIn && booking.checkOut) {
+            nights = Math.max(1, Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24)));
+        }
         
-        let baseAmount = booking.totalPrice + (booking.discountAmount || 0);
+        const roomName = booking.room?.name || booking.room?.type || 'Room';
+        
+        let baseAmount = (booking.totalPrice || 0) + (booking.discountAmount || 0);
         if (booking.addOns && booking.addOns.length > 0) {
-            booking.addOns.forEach(addon => { baseAmount -= addon.totalPrice; });
+            booking.addOns.forEach(addon => { baseAmount -= (addon.totalPrice || 0); });
         }
         
         doc.text(`${roomName} (${nights} nights)`, 50, y)
@@ -110,9 +117,9 @@ const downloadInvoice = async (req, res) => {
 
         if (booking.addOns && booking.addOns.length > 0) {
              booking.addOns.forEach(addon => {
-                 doc.text(`Add-on: ${addon.name}`, 50, y)
+                 doc.text(`Add-on: ${addon.name || 'Unknown'}`, 50, y)
                     .text('-', 250, y)
-                    .text(`Rs. ${addon.totalPrice}`, 450, y, { align: 'right' });
+                    .text(`Rs. ${addon.totalPrice || 0}`, 450, y, { align: 'right' });
                  y += 20;
              });
         }
@@ -129,7 +136,7 @@ const downloadInvoice = async (req, res) => {
 
         doc.font('Helvetica-Bold')
            .text('Total Amount:', 300, y)
-           .text(`Rs. ${booking.totalPrice}`, 450, y, { align: 'right' });
+           .text(`Rs. ${booking.totalPrice || 0}`, 450, y, { align: 'right' });
 
         // Footer
         doc.fontSize(10)
@@ -140,7 +147,11 @@ const downloadInvoice = async (req, res) => {
 
     } catch (error) {
         console.error("Invoice generation error:", error);
-        res.status(500).json({ message: "Error generating invoice" });
+        if (!res.headersSent) {
+            res.status(500).json({ message: "Error generating invoice: " + error.message });
+        } else {
+            res.end();
+        }
     }
 };
 
