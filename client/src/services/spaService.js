@@ -50,6 +50,13 @@ const spaService = {
     return response.data;
   },
 
+  getBookedSlots: async (date, serviceId) => {
+    const response = await axios.get(`${API_URL}/spa/bookings/booked-slots`, {
+      params: { date, serviceId }
+    });
+    return response.data;
+  },
+
   getAllBookingsAdmin: async () => {
     const token = localStorage.getItem('token');
     const config = { headers: { Authorization: `Bearer ${token}` } };

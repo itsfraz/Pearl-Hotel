@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import spaService from '../services/spaService';
 import { motion } from 'framer-motion';
 import { 
@@ -10,10 +10,36 @@ import {
   FaQuoteLeft,
   FaStar,
   FaClock,
-  FaWhatsapp
+  FaWhatsapp,
+  FaExclamationCircle
 } from 'react-icons/fa';
 import { MdOutlineSelfImprovement, MdCleanHands } from 'react-icons/md';
-import { TbMassage, TbYoga } from 'react-icons/tb';
+
+// --- Utility: Slot Generator ---
+const generateTimeSlots = (durationMinutes, openTime = '10:00', closeTime = '22:00') => {
+  const slots = [];
+  const [openHour, openMin] = openTime.split(':').map(Number);
+  const [closeHour, closeMin] = closeTime.split(':').map(Number);
+
+  let current = new Date();
+  current.setHours(openHour, openMin, 0, 0);
+
+  const end = new Date();
+  end.setHours(closeHour, closeMin, 0, 0);
+
+  while (true) {
+    const slotEnd = new Date(current.getTime() + durationMinutes * 60000);
+    if (slotEnd > end) break;
+
+    const hours = String(current.getHours()).padStart(2, '0');
+    const minutes = String(current.getMinutes()).padStart(2, '0');
+    slots.push(`${hours}:${minutes}`);
+
+    current = slotEnd;
+  }
+
+  return slots;
+};
 
 const Spa = () => {
   const [activeTab, setActiveTab] = useState('massage');
@@ -43,7 +69,15 @@ const Spa = () => {
     guestName: '',
     guestEmail: ''
   });
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [formError, setFormError] = useState('');
 
+  const selectedService = useMemo(() =>
+    services.find(s => s._id === bookingData.serviceId),
+  [services, bookingData.serviceId]);
+
+  // Fetch services on mount
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -61,8 +95,49 @@ const Spa = () => {
     fetchServices();
   }, []);
 
+  // Generate slots when service changes (and reset selected time)
+  useEffect(() => {
+    if (!selectedService) {
+      setAvailableSlots([]);
+      return;
+    }
+
+    const duration = selectedService.duration_minutes || selectedService.duration || 60;
+    const slots = generateTimeSlots(duration, '10:00', '22:00');
+    setAvailableSlots(slots);
+
+    // Reset selected time when service changes
+    setBookingData(prev => ({ ...prev, time: '' }));
+    setFormError('');
+  }, [selectedService]);
+
+  // Fetch booked slots when date or service changes
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (!bookingData.date || !bookingData.serviceId) {
+        setBookedSlots([]);
+        return;
+      }
+      try {
+        const times = await spaService.getBookedSlots(bookingData.date, bookingData.serviceId);
+        setBookedSlots(times);
+      } catch (error) {
+        console.error('Failed to fetch booked slots', error);
+        setBookedSlots([]);
+      }
+    };
+    fetchBookedSlots();
+  }, [bookingData.date, bookingData.serviceId]);
+
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
+
+    if (!bookingData.time) {
+      setFormError('Please select a time slot.');
+      return;
+    }
+
     try {
       await spaService.createBooking(bookingData);
       alert('Booking Request Sent Successfully! We will confirm shortly via email.');
@@ -73,15 +148,29 @@ const Spa = () => {
         guestName: '',
         guestEmail: ''
       });
+      setBookedSlots([]);
     } catch (error) {
        console.error(error);
-       alert('Failed to book. Please try again.');
+       const msg = error.response?.data?.message || 'Failed to book. Please try again.';
+       setFormError(msg);
     }
   };
 
   const handleInputChange = (e) => {
-    setBookingData({ ...bookingData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setBookingData(prev => ({ ...prev, [name]: value }));
+    if (name === 'serviceId' || name === 'date') {
+      setFormError('');
+    }
   };
+
+  const handleTimeSelect = (slot) => {
+    if (bookedSlots.includes(slot)) return;
+    setBookingData(prev => ({ ...prev, time: slot }));
+    setFormError('');
+  };
+
+  const todayStr = new Date().toISOString().split('T')[0];
 
   return (
     <div className="min-h-screen bg-neutral-50 font-sans text-neutral-800">
@@ -216,7 +305,7 @@ const Spa = () => {
                     </div>
                   )}
                    <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur text-neutral-900 text-sm font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-                    <FaClock size={12} className="text-emerald-600" /> {service.duration} mins
+                    <FaClock size={12} className="text-emerald-600" /> {service.duration_minutes || service.duration} mins
                   </div>
                 </div>
                 <div className="p-6">
@@ -290,6 +379,13 @@ const Spa = () => {
               <p className="text-neutral-500">Reserve your wellness session in just a few clicks.</p>
             </div>
 
+            {formError && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
+                <FaExclamationCircle className="flex-shrink-0" />
+                <span className="text-sm font-medium">{formError}</span>
+              </div>
+            )}
+
             <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleBookingSubmit}>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-neutral-700 mb-2">Select Service</label>
@@ -301,7 +397,11 @@ const Spa = () => {
                   required
                 >
                   <option value="">Select a Service</option>
-                  {services.map((s) => <option key={s._id} value={s._id}>{s.name} - ₹{s.price}</option>)}
+                  {services.map((s) => (
+                    <option key={s._id} value={s._id}>
+                      {s.name} — ₹{s.price} ({s.duration_minutes || s.duration} mins)
+                    </option>
+                  ))}
                 </select>
               </div>
               
@@ -310,22 +410,50 @@ const Spa = () => {
                 <input 
                   type="date" 
                   name="date"
+                  min={todayStr}
                   value={bookingData.date}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-white" 
                   required
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">Preferred Time</label>
-                <input 
-                  type="time" 
-                  name="time"
-                  value={bookingData.time}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-white" 
-                  required
-                />
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Preferred Time <span className="text-neutral-400 font-normal">(10:00 AM – 10:00 PM)</span>
+                </label>
+                {bookingData.date && selectedService ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-48 overflow-y-auto p-1">
+                    {availableSlots.map(slot => {
+                      const isBooked = bookedSlots.includes(slot);
+                      const isSelected = bookingData.time === slot;
+                      return (
+                        <button
+                          key={slot}
+                          type="button"
+                          disabled={isBooked}
+                          onClick={() => handleTimeSelect(slot)}
+                          className={`
+                            py-2 px-1 rounded-lg text-sm font-medium border transition-all
+                            ${isSelected
+                              ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                              : isBooked
+                                ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed'
+                                : 'bg-white text-neutral-700 border-neutral-200 hover:border-emerald-500 hover:text-emerald-700'
+                            }
+                          `}
+                          title={isBooked ? 'Already booked' : `Book at ${slot}`}
+                        >
+                          {slot}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="w-full px-4 py-6 rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-400 text-sm text-center">
+                    Please select a service and date to view available slots.
+                  </div>
+                )}
               </div>
 
                <div className="md:col-span-2">
@@ -351,7 +479,11 @@ const Spa = () => {
               </div>
 
               <div className="md:col-span-2 mt-4">
-                <button type="submit" className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <button 
+                  type="submit" 
+                  disabled={!bookingData.time}
+                  className={`w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+                >
                   Confirm Booking
                 </button>
                 <p className="text-center text-xs text-neutral-400 mt-4">

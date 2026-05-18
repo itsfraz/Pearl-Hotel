@@ -47,13 +47,16 @@ const getServiceById = async (req, res) => {
 // @route   POST /api/spa/services
 // @access  Private/Admin
 const createService = async (req, res) => {
-  const { name, category, duration, price, description, image, isFeatured, isPopular } = req.body;
+  const { name, category, duration, duration_minutes, price, description, image, isFeatured, isPopular } = req.body;
+
+  const dur = duration_minutes || duration;
 
   try {
     const service = new SpaService({
       name,
       category,
-      duration,
+      duration: dur,
+      duration_minutes: dur,
       price,
       description,
       image,
@@ -72,7 +75,7 @@ const createService = async (req, res) => {
 // @route   PUT /api/spa/services/:id
 // @access  Private/Admin
 const updateService = async (req, res) => {
-  const { name, category, duration, price, description, image, isActive, isFeatured, isPopular } = req.body;
+  const { name, category, duration, duration_minutes, price, description, image, isActive, isFeatured, isPopular } = req.body;
 
   try {
     const service = await SpaService.findById(req.params.id);
@@ -80,7 +83,13 @@ const updateService = async (req, res) => {
     if (service) {
       service.name = name || service.name;
       service.category = category || service.category;
-      service.duration = duration || service.duration;
+
+      const dur = duration_minutes || duration;
+      if (dur) {
+        service.duration = dur;
+        service.duration_minutes = dur;
+      }
+
       service.price = price || service.price;
       service.description = description || service.description;
       service.image = image || service.image;
@@ -137,6 +146,39 @@ const createBooking = async (req, res) => {
   }
 
   try {
+    // Validate service exists and fetch duration
+    const service = await SpaService.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    const durationMinutes = service.duration_minutes || service.duration || 0;
+
+    // Validate time against operating hours (10:00 - 22:00)
+    const [hours, minutes] = time.split(':').map(Number);
+    const startTime = new Date();
+    startTime.setHours(hours, minutes, 0, 0);
+
+    const endTime = new Date(startTime.getTime() + durationMinutes * 60000);
+    const closeTime = new Date();
+    closeTime.setHours(22, 0, 0, 0);
+
+    if (endTime > closeTime) {
+      return res.status(400).json({ message: `Selected time plus service duration exceeds our closing time (10:00 PM). Please choose an earlier slot.` });
+    }
+
+    // Prevent double booking for same service, date and time
+    const existingBooking = await SpaBooking.findOne({
+      service: serviceId,
+      date,
+      time,
+      status: { $ne: 'Cancelled' }
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({ message: 'This time slot is already booked. Please select another slot.' });
+    }
+
     const booking = new SpaBooking({
       user: userId,
       service: serviceId,
@@ -183,6 +225,28 @@ const getUserBookings = async (req, res) => {
   }
 };
 
+// @desc    Get booked time slots for a service on a specific date
+// @route   GET /api/spa/bookings/booked-slots
+// @access  Public
+const getBookedSlots = async (req, res) => {
+  try {
+    const { date, serviceId } = req.query;
+    if (!date || !serviceId) {
+      return res.status(400).json({ message: 'Date and serviceId are required' });
+    }
+
+    const bookings = await SpaBooking.find({
+      date,
+      service: serviceId,
+      status: { $ne: 'Cancelled' }
+    }).select('time');
+
+    res.json(bookings.map(b => b.time));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Update a spa booking status
 // @route   PUT /api/spa/bookings/:id/status
 // @access  Private/Admin
@@ -211,5 +275,6 @@ module.exports = {
   createBooking,
   getAllBookings,
   getUserBookings,
+  getBookedSlots,
   updateBookingStatus
 };

@@ -10,12 +10,16 @@ const {
   createBooking,
   getAllBookings,
   getUserBookings,
+  getBookedSlots,
   updateBookingStatus
 } = require('../controllers/spaController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 router.route('/bookings/mybookings')
   .get(protect, getUserBookings);
+
+router.route('/bookings/booked-slots')
+  .get(getBookedSlots);
 
 router.route('/bookings/:id/status')
   .put(protect, admin, updateBookingStatus);

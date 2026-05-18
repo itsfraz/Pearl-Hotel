@@ -12,7 +12,11 @@ const spaServiceSchema = new mongoose.Schema({
     required: true
   },
   duration: {
-    type: Number, // in minutes
+    type: Number, // in minutes (legacy, kept for backward compatibility)
+    required: true
+  },
+  duration_minutes: {
+    type: Number, // canonical duration field in minutes
     required: true
   },
   price: {
@@ -41,6 +45,16 @@ const spaServiceSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+// Sync duration_minutes with duration for backward compatibility
+spaServiceSchema.pre('save', function(next) {
+  if (this.isModified('duration') && !this.isModified('duration_minutes')) {
+    this.duration_minutes = this.duration;
+  } else if (this.isModified('duration_minutes') && !this.isModified('duration')) {
+    this.duration = this.duration_minutes;
+  }
+  next();
 });
 
 module.exports = mongoose.model('SpaService', spaServiceSchema);
