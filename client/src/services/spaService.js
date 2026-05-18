@@ -48,6 +48,20 @@ const spaService = {
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
     const response = await axios.post(`${API_URL}/spa/bookings`, bookingData, config);
     return response.data;
+  },
+
+  getAllBookingsAdmin: async () => {
+    const token = localStorage.getItem('token');
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}/spa/bookings`, config);
+    return response.data;
+  },
+
+  updateBookingStatus: async (id, status) => {
+    const token = localStorage.getItem('token');
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.put(`${API_URL}/spa/bookings/${id}/status`, { status }, config);
+    return response.data;
   }
 };
 

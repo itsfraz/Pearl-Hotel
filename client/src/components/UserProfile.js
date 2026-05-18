@@ -44,7 +44,36 @@ const UserProfile = () => {
             };
             
             const res = await axios.get(`${API_URL}/bookings`, config);
-            setBookings(res.data || []);
+            
+            let spaRes = { data: [] };
+            try {
+                spaRes = await axios.get(`${API_URL}/spa/bookings/mybookings`, config);
+            } catch (spaErr) {
+                console.warn("Could not fetch spa bookings (is backend restarted?):", spaErr.message);
+            }
+            
+            const roomBookings = (res.data || []).map(b => ({ ...b, type: 'room' }));
+            const spaBookings = (spaRes.data || []).map(sb => {
+                // Parse date and time to create a valid checkIn/checkOut Date
+                // e.g. date: "2024-05-18", time: "14:00"
+                const dt = new Date(`${sb.date}T${sb.time}:00`);
+                return {
+                    _id: sb._id,
+                    type: 'spa',
+                    status: sb.status,
+                    checkIn: dt,
+                    checkOut: dt, // Use same for sorting logic
+                    room: { 
+                        name: sb.service?.name || 'Spa Service',
+                        type: 'Spa Booking'
+                    },
+                    totalPrice: sb.service?.price || 0,
+                    specialRequests: sb.notes
+                };
+            });
+            
+            const allBookings = [...roomBookings, ...spaBookings].sort((a, b) => new Date(b.checkIn) - new Date(a.checkIn));
+            setBookings(allBookings);
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error.response?.data?.message || 'Failed to load profile data');
@@ -54,7 +83,7 @@ const UserProfile = () => {
         }
     };
 
-    const handleCancel = async (id) => {
+    const handleCancel = async (id, type) => {
         if (!window.confirm("Are you sure you want to cancel this booking?")) return;
         
         try {
@@ -63,7 +92,11 @@ const UserProfile = () => {
                 headers: { Authorization: `Bearer ${token}` }
             };
             
-            await axios.put(`${API_URL}/bookings/${id}/cancel`, {}, config);
+            if (type === 'spa') {
+                await axios.put(`${API_URL}/spa/bookings/${id}/status`, { status: 'Cancelled' }, config);
+            } else {
+                await axios.put(`${API_URL}/bookings/${id}/cancel`, {}, config);
+            }
             
             // Refresh bookings
             await fetchData();
@@ -282,12 +315,12 @@ const UserProfile = () => {
                                                         ID: {booking._id?.slice(-6).toUpperCase()}
                                                     </span>
                                                     <span className="text-xs font-semibold text-slate-500">
-                                                        {calculateNights(booking.checkIn, booking.checkOut)} Night(s)
+                                                        {booking.type === 'spa' ? 'Spa Appointment' : `${calculateNights(booking.checkIn, booking.checkOut)} Night(s)`}
                                                     </span>
                                                 </div>
                                                 
                                                 <h3 className="text-xl font-display font-bold text-primary mb-3">
-                                                    {booking.room?.name || booking.room?.type || "Room"} 
+                                                    {booking.room?.name || booking.room?.type || "Booking"} 
                                                     {booking.room?.roomNumber && ` - #${booking.room.roomNumber}`}
                                                 </h3>
                                                 
@@ -298,16 +331,19 @@ const UserProfile = () => {
                                                             {new Date(booking.checkIn).toLocaleDateString('en-US', { 
                                                                 month: 'short', day: 'numeric', year: 'numeric' 
                                                             })}
+                                                            {booking.type === 'spa' && ` at ${new Date(booking.checkIn).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <FaCalendarAlt className="text-secondary" />
-                                                        <span>
-                                                            {new Date(booking.checkOut).toLocaleDateString('en-US', { 
-                                                                month: 'short', day: 'numeric', year: 'numeric' 
-                                                            })}
-                                                        </span>
-                                                    </div>
+                                                    {booking.type !== 'spa' && (
+                                                        <div className="flex items-center gap-2">
+                                                            <FaCalendarAlt className="text-secondary" />
+                                                            <span>
+                                                                {new Date(booking.checkOut).toLocaleDateString('en-US', { 
+                                                                    month: 'short', day: 'numeric', year: 'numeric' 
+                                                                })}
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                     <div className="flex items-center gap-2">
                                                         <FaCreditCard className="text-secondary" />
                                                         <span className="font-bold">₹{booking.totalPrice?.toLocaleString()}</span>
@@ -316,7 +352,7 @@ const UserProfile = () => {
 
                                                 {booking.specialRequests && (
                                                     <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                                                        <p className="text-xs text-blue-600 font-semibold mb-1">Special Requests:</p>
+                                                        <p className="text-xs text-blue-600 font-semibold mb-1">Notes/Requests:</p>
                                                         <p className="text-sm text-slate-700">{booking.specialRequests}</p>
                                                     </div>
                                                 )}
@@ -325,7 +361,7 @@ const UserProfile = () => {
                                             <div className="flex flex-row lg:flex-col items-center gap-3">
                                                 {booking.status === 'Confirmed' && activeTab === 'upcoming' && (
                                                     <button 
-                                                        onClick={() => handleCancel(booking._id)}
+                                                        onClick={() => handleCancel(booking._id, booking.type)}
                                                         className="px-5 py-2.5 text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-colors"
                                                     >
                                                         Cancel Booking

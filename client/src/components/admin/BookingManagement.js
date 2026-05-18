@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import bookingService from '../../services/bookingService';
-import { FaSearch, FaTimes, FaCalendarAlt, FaUser, FaDoorOpen } from 'react-icons/fa';
+import spaService from '../../services/spaService';
+import { FaSearch, FaTimes, FaCalendarAlt, FaUser, FaDoorOpen, FaSpa } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const BookingManagement = () => {
@@ -16,7 +17,34 @@ const BookingManagement = () => {
         try {
             setLoading(true);
             const data = await bookingService.getAllBookings();
-            setBookings(data || []);
+            let spaData = [];
+            try {
+                spaData = await spaService.getAllBookingsAdmin();
+            } catch (err) {
+                console.error("Failed to fetch spa bookings", err);
+            }
+            
+            const roomBookings = (data || []).map(b => ({ ...b, type: 'room' }));
+            const spaBookings = (spaData || []).map(sb => {
+                const dt = new Date(`${sb.date}T${sb.time}:00`);
+                return {
+                    ...sb,
+                    _id: sb._id,
+                    type: 'spa',
+                    status: sb.status,
+                    checkIn: dt,
+                    checkOut: dt,
+                    room: {
+                        name: sb.service?.name || 'Spa Service',
+                        type: 'Spa Appointment',
+                        roomNumber: null
+                    },
+                    totalPrice: sb.service?.price || 0,
+                    user: sb.user || { firstName: sb.guestName, email: sb.guestEmail, lastName: '' }
+                };
+            });
+
+            setBookings([...roomBookings, ...spaBookings].sort((a,b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)));
         } catch (error) {
             console.error("Failed to fetch bookings", error);
             toast.error("Failed to load bookings");
@@ -25,10 +53,14 @@ const BookingManagement = () => {
         }
     };
 
-    const handleCancel = async (id) => {
+    const handleCancel = async (id, type) => {
         if (window.confirm('Are you sure you want to cancel this booking?')) {
             try {
-                await bookingService.cancelBooking(id);
+                if (type === 'spa') {
+                    await spaService.updateBookingStatus(id, 'Cancelled');
+                } else {
+                    await bookingService.cancelBooking(id);
+                }
                 toast.success("Booking cancelled successfully");
                 // Refresh bookings
                 await fetchBookings();
@@ -39,9 +71,13 @@ const BookingManagement = () => {
         }
     };
 
-    const handleUpdateStatus = async (id, status) => {
+    const handleUpdateStatus = async (id, status, type) => {
         try {
-            await bookingService.updateStatus(id, status);
+            if (type === 'spa') {
+                await spaService.updateBookingStatus(id, status);
+            } else {
+                await bookingService.updateStatus(id, status);
+            }
             toast.success(`Booking marked as ${status}`);
             await fetchBookings();
         } catch (error) {
@@ -147,7 +183,7 @@ const BookingManagement = () => {
                                             {booking.room?.name || booking.room?.type || 'Room'}
                                         </div>
                                         <div className="text-[11px] text-slate-400 font-mono">
-                                            Room {booking.room?.roomNumber}
+                                            {booking.type === 'spa' ? 'Spa Appointment' : `Room ${booking.room?.roomNumber}`}
                                         </div>
                                     </td>
                                     <td className="p-4 text-xs text-slate-600">
@@ -155,16 +191,19 @@ const BookingManagement = () => {
                                             <div className="flex items-center gap-1.5">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
                                                 {new Date(booking.checkIn).toLocaleDateString('en-US', { disable_year: 'true', month: 'short', day: 'numeric' })}
+                                                {booking.type === 'spa' && ` at ${new Date(booking.checkIn).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`}
                                             </div>
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
-                                                {new Date(booking.checkOut).toLocaleDateString('en-US', { disable_year: 'true', month: 'short', day: 'numeric' })}
-                                            </div>
+                                            {booking.type !== 'spa' && (
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                                    {new Date(booking.checkOut).toLocaleDateString('en-US', { disable_year: 'true', month: 'short', day: 'numeric' })}
+                                                </div>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="p-4 text-center">
                                         <span className="font-bold text-slate-700 text-sm bg-slate-50 px-2 py-1 rounded">
-                                            {calculateNights(booking.checkIn, booking.checkOut)}
+                                            {booking.type === 'spa' ? '-' : calculateNights(booking.checkIn, booking.checkOut)}
                                         </span>
                                     </td>
                                     <td className="p-4 font-bold text-slate-800 text-sm">
@@ -177,27 +216,27 @@ const BookingManagement = () => {
                                         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end">
                                             {booking.status === 'Confirmed' && (
                                                 <button 
-                                                    onClick={() => handleUpdateStatus(booking._id, 'Completed')}
+                                                    onClick={() => handleUpdateStatus(booking._id, 'Completed', booking.type)}
                                                     className="bg-green-50 text-green-600 hover:bg-green-100 p-2 rounded-lg transition-colors mr-2"
-                                                    title="Complete Stay"
+                                                    title="Complete"
                                                 >
                                                     <FaDoorOpen />
                                                 </button>
                                             )}
                                             {booking.status === 'Pending' && (
                                                 <button 
-                                                    onClick={() => handleUpdateStatus(booking._id, 'Confirmed')}
+                                                    onClick={() => handleUpdateStatus(booking._id, 'Confirmed', booking.type)}
                                                     className="bg-blue-50 text-blue-600 hover:bg-blue-100 p-2 rounded-lg transition-colors mr-2"
-                                                    title="Confirm Booking"
+                                                    title="Confirm"
                                                 >
                                                     <FaCalendarAlt />
                                                 </button>
                                             )}
                                             {booking.status !== 'Cancelled' && booking.status !== 'Completed' && (
                                                 <button 
-                                                    onClick={() => handleCancel(booking._id)}
+                                                    onClick={() => handleCancel(booking._id, booking.type)}
                                                     className="bg-red-50 text-red-500 hover:bg-red-100 p-2 rounded-lg transition-colors"
-                                                    title="Cancel Booking"
+                                                    title="Cancel"
                                                 >
                                                     <FaTimes />
                                                 </button>
@@ -241,31 +280,33 @@ const BookingManagement = () => {
                                <div className="flex flex-col gap-1 text-xs">
                                    <div className="flex items-center gap-1.5">
                                        <FaCalendarAlt className="text-green-500 text-[10px]" />
-                                       <span>{new Date(booking.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                       <span>{new Date(booking.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {booking.type === 'spa' && ` at ${new Date(booking.checkIn).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`}</span>
                                    </div>
+                                   {booking.type !== 'spa' && (
                                     <div className="flex items-center gap-1.5">
                                        <FaCalendarAlt className="text-red-500 text-[10px]" />
                                        <span>{new Date(booking.checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                                   </div>
+                                    </div>
+                                   )}
                                </div>
                                <div className="text-right text-xs">
                                    <div className="font-medium text-slate-700">{booking.room?.name || booking.room?.type}</div>
-                                   <div className="text-slate-400">Room {booking.room?.roomNumber}</div>
+                                   <div className="text-slate-400">{booking.type === 'spa' ? 'Spa Appointment' : `Room ${booking.room?.roomNumber}`}</div>
                                </div>
                            </div>
 
                            <div className="grid grid-cols-2 gap-2">
                                 {booking.status === 'Confirmed' && (
                                     <button 
-                                        onClick={() => handleUpdateStatus(booking._id, 'Completed')}
+                                        onClick={() => handleUpdateStatus(booking._id, 'Completed', booking.type)}
                                         className="col-span-2 py-2 bg-green-50 text-green-600 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors flex items-center justify-center gap-2"
                                     >
-                                        <FaDoorOpen /> Complete Stay
+                                        <FaDoorOpen /> Complete
                                     </button>
                                 )}
                                 {booking.status === 'Pending' && (
                                     <button 
-                                        onClick={() => handleUpdateStatus(booking._id, 'Confirmed')}
+                                        onClick={() => handleUpdateStatus(booking._id, 'Confirmed', booking.type)}
                                         className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors flex items-center justify-center gap-2"
                                     >
                                         <FaCalendarAlt /> Confirm
@@ -273,7 +314,7 @@ const BookingManagement = () => {
                                 )}
                                 {booking.status !== 'Cancelled' && booking.status !== 'Completed' && (
                                     <button 
-                                        onClick={() => handleCancel(booking._id)}
+                                        onClick={() => handleCancel(booking._id, booking.type)}
                                         className={`py-2 bg-red-50 text-red-500 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2 ${booking.status === 'Pending' ? 'flex-1' : 'col-span-2'}`}
                                     >
                                         <FaTimes /> Cancel

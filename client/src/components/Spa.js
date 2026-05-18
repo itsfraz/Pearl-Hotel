@@ -6,7 +6,6 @@ import {
   FaHotTub, 
   FaPhoneAlt, 
   FaCalendarCheck, 
-  FaCheckCircle,
   FaLeaf,
   FaQuoteLeft,
   FaStar,
@@ -230,7 +229,13 @@ const Spa = () => {
                   <p className="text-neutral-500 text-sm leading-relaxed mb-4">
                     {service.description}
                   </p>
-                  <button className="w-full py-3 rounded-xl border border-emerald-600 text-emerald-700 font-medium hover:bg-emerald-600 hover:text-white transition-all">
+                  <button 
+                    onClick={() => {
+                      setBookingData(prev => ({ ...prev, serviceId: service._id }));
+                      document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="w-full py-3 rounded-xl border border-emerald-600 text-emerald-700 font-medium hover:bg-emerald-600 hover:text-white transition-all"
+                  >
                     Book Treatment
                   </button>
                 </div>

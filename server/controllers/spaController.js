@@ -124,9 +124,21 @@ const deleteService = async (req, res) => {
 const createBooking = async (req, res) => {
   const { serviceId, date, time, guestName, guestEmail, notes } = req.body;
   
+  let userId = null;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      const jwt = require('jsonwebtoken');
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      userId = decoded.id;
+    } catch (error) {
+      console.error('Guest booking or invalid token');
+    }
+  }
+
   try {
     const booking = new SpaBooking({
-      user: req.user ? req.user._id : null,
+      user: userId,
       service: serviceId,
       date,
       time,
@@ -157,6 +169,38 @@ const getAllBookings = async (req, res) => {
   }
 };
 
+// @desc    Get all spa bookings for a user
+// @route   GET /api/spa/bookings/mybookings
+// @access  Private
+const getUserBookings = async (req, res) => {
+  try {
+    const bookings = await SpaBooking.find({ user: req.user._id })
+      .populate('service', 'name price duration')
+      .sort({ createdAt: -1 });
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update a spa booking status
+// @route   PUT /api/spa/bookings/:id/status
+// @access  Private/Admin
+const updateBookingStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const booking = await SpaBooking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    booking.status = status;
+    await booking.save();
+    res.json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getServices,
   getAdminServices,
@@ -165,5 +209,7 @@ module.exports = {
   updateService,
   deleteService,
   createBooking,
-  getAllBookings
+  getAllBookings,
+  getUserBookings,
+  updateBookingStatus
 };

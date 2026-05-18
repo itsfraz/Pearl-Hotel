@@ -8,9 +8,17 @@ const {
   updateService,
   deleteService,
   createBooking,
-  getAllBookings
+  getAllBookings,
+  getUserBookings,
+  updateBookingStatus
 } = require('../controllers/spaController');
 const { protect, admin } = require('../middleware/authMiddleware');
+
+router.route('/bookings/mybookings')
+  .get(protect, getUserBookings);
+
+router.route('/bookings/:id/status')
+  .put(protect, admin, updateBookingStatus);
 
 router.route('/bookings')
   .post(createBooking)

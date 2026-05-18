@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import roomService from '../../services/roomService';
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaBed, FaDollarSign, FaList, FaImage, FaHashtag, FaUsers, 
   FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaHotTub, FaTv, FaWind, FaCoffee, FaGlassMartini, 
-  FaBell, FaSpa, FaSnowflake, FaUtensils, FaCheck, FaRulerCombined, FaAlignLeft, FaShower, FaToilet,
+  FaBell, FaSpa, FaUtensils, FaCheck, FaRulerCombined, FaAlignLeft, FaShower, FaToilet,
   FaPhone, FaBroom, FaLock, FaVideo, FaFire, FaExclamationTriangle, FaShieldAlt,
   FaConciergeBell, FaClock, FaLightbulb, FaPlug, FaCouch, FaSoap, FaBath, FaSatelliteDish, 
   FaUserShield } from 'react-icons/fa';

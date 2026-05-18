@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import spaService from '../../services/spaService';
-import { FaEdit, FaTrash, FaPlus, FaTimes, FaSpa, FaDollarSign, FaClock, FaTags, FaAlignLeft, FaCheck, FaImage, FaStar, FaFire } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaTimes, FaSpa, FaDollarSign, FaClock, FaTags, FaAlignLeft, FaImage, FaStar, FaFire } from 'react-icons/fa';
 
 const SpaServiceManagement = () => {
   const [services, setServices] = useState([]);
