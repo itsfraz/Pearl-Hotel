@@ -1,174 +1,149 @@
-��﻿# 🏨 Pearl Hotel - Luxury Booking Management System
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=250&section=header&text=Pearl%20Hotel%20Management&fontSize=80&animation=fadeIn&fontAlignY=35" alt="Header" />
+  
+  <br />
+  <br />
 
-![Status](https://img.shields.io/badge/Status-Active_Development-brightgreen?style=for-the-badge)
-![MERN Stack](https://img.shields.io/badge/Stack-MERN-blue?style=for-the-badge&logo=react)
-![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&pause=1000&color=2563EB&center=true&vCenter=true&width=600&lines=Welcome+to+Pearl+Hotel+Management;A+Modern+MERN+Stack+Application;Manage+Bookings,+Rooms,+Spa,+and+More!" alt="Typing SVG" />
 
-> A modern, high-performance, and responsive hotel booking platform designed to deliver a premium user experience. Built with the MERN stack (MongoDB, Express, React, Node.jsand styled with Tailwind CSS.
+  <p align="center">
+    <strong>A fully-featured, beautifully designed Hotel Management System built with the MERN stack.</strong>
+  </p>
+  
+  <p align="center">
+    <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+    <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion" />
+  </p>
+</div>
 
----
+<br />
 
-## 🆕 What's New
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" />
 
-- **Brand New UI/UX:** A total visual overhaul featuring a modern, luxury aesthetic with "glassmorphism" effects, smooth transitions, and a refined color palette (Slate & Gold).
-- **Performance First:** Implemented **Skeleton Loaders** and **Smart Image Lazy Loading** for instant feedback and lightning-fast page loads.
-- **Fully Responsive:** Optimized for all devices-from large desktops to mobile phones-ensuring a thumb-friendly interface.
-- **Admin Powers:** Enhanced booking management with status controls (Check-In, Complete, Cancel) and room availability tracking.
+## 🌟 Introduction
 
----
+**Pearl Hotel MERN** is a comprehensive solution designed to automate and streamline the daily operations of a luxury hotel. From managing room bookings and spa reservations to processing payments securely, this platform offers a seamless experience for both guests and administrators.
 
-## 🌟 Key Features
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" />
 
-### 🛎️ For Guests (Frontend)
+## ✨ Key Features
 
-- **Immersive Room Browsing:** View rooms with high-quality image carousels, detailed amenities, and live availability status.
-- **Advanced Filtering:** Filter rooms by price, capacity, and specific amenities (WiFi, Pool, Spa, etc.).
-- **Seamless Booking Flow:**
-  - Real-time date availability checks.
-  - Interactive multi-step booking wizard.
-  - Add-on services selection (Breakfast, Airport Pickup, etc.).
-  - Coupon code integration.
-- **User Dashboard:** Manage profile, view booking history, and check current booking status.
-- **Virtual Tours & Gallery:** Interactive components to showcase the property.
+### 🤵 For Guests
+- 🏨 **Room Browsing & Booking:** View available rooms with high-quality images, descriptions, and dynamic pricing.
+- 💳 **Secure Payments:** Integrated with **Razorpay** for safe and instant transactions.
+- 🎟️ **Coupons & Discounts:** Apply promo codes during checkout.
+- 💆‍♀️ **Spa Reservations:** Browse and book spa treatments directly from the app.
+- 🍽️ **Restaurant Menu:** View the hotel's dining options.
+- 📅 **Event Management:** Book hotel halls for conferences and parties.
+- ⭐ **Reviews & Ratings:** Share your experience and read reviews from other guests.
 
-### ⚙️ For Administrators (Backend Panel)
+### 🛡️ For Administrators (Admin Dashboard)
+- 📊 **Real-time Analytics:** Track revenue, bookings, and occupancy rates via Interactive Charts (Recharts).
+- 🛏️ **Room Management:** Add, update, or remove rooms and categories.
+- 🧑‍🤝‍🧑 **User & Staff Management:** Manage accounts and privileges securely.
+- 🧾 **Invoicing:** Auto-generate beautiful PDF invoices for guests.
 
-- **Comprehensive Dashboard:** Visual statistics on bookings, revenue, and occupancy.
-- **Room Management:** Full CRUD operations for rooms, including managing images, pricing, features, and amenities.
-- **Booking Central:**
-  - View all bookings with filters.
-  - Update booking statuses (Pending -> Paid -> Completed).
-  - Manage room availability dates.
-- **User Management:** Oversee registered users and admin staff.
-- **Menu & Coupon Management:** *[In Progress]* Tools for managing dining menus and promotional logic.
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" />
 
----
+## 🛠️ Tech Stack & Technologies
 
-## ⚡ Technology Stack
+### 💻 Frontend (Client)
+- **Framework:** React.js
+- **Styling:** Tailwind CSS (Utility-first styling)
+- **Animations:** Framer Motion & Swiper.js
+- **Maps:** React Leaflet
+- **Data Visualization:** Recharts
+- **Routing:** React Router v7
+- **HTTP Client:** Axios
+- **Notifications:** React Toastify
 
-| Area         | Technologies                                                                                      |
-| ------------ | ------------------------------------------------------------------------------------------------- |
-| **Frontend** | React 19, Tailwind CSS, React Router v7, Axios, Swiper (Carousels), React Datepicker, React Icons |
-| **Backend**  | Node.js, Express.js                                                                               |
-| **Database** | MongoDB, Mongoose                                                                                 |
-| **Auth**     | JWT (JSON Web Tokens), Bcrypt                                                                     |
-| **Tools**    | Git, NPM, Postman (Testing)                                                                       |
+### ⚙️ Backend (Server)
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** MongoDB (Mongoose ORM)
+- **Authentication:** JSON Web Tokens (JWT) & bcryptjs
+- **Payment Gateway:** Razorpay
+- **PDF Generation:** PDFKit
+- **SMS Notifications:** Twilio
 
----
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" />
 
 ## 🚀 Getting Started
 
-Follow these steps to set up the project locally.
+Follow these steps to set up the project locally on your machine.
 
-### Prerequisites
+### 1️⃣ Prerequisites
+Ensure you have the following installed on your local machine:
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [MongoDB](https://www.mongodb.com/) (Local or MongoDB Atlas)
+- [Git](https://git-scm.com/)
 
-- Node.js (v16 or higher)
-- MongoDB (Local or Atlas URL)
-- Git
-
-Email:
-admin@pearlhotel.com
-Password: adminpassword123
-
-### 1. Clone the Repository
-
+### 2️⃣ Clone the Repository
 ```bash
 git clone https://github.com/itsfraz/Pearl-Hotel.git
 cd Pearl-Hotel
 ```
 
-### 2. Backend Setup
-
+### 3️⃣ Backend Setup (Server)
+Navigate to the server directory and install dependencies:
 ```bash
 cd server
 npm install
 ```
 
-**Configure Environment Variables:**
-Create a `.env` file in the `server` directory:
-
+Create a `.env` file in the `server` directory and add the following variables:
 ```env
-PORT=5000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-razorpay_key_id=test_key_id
-razorpay_key_secret=test_key_secret
-CLIENT_URL=http://localhost:3000
+JWT_SECRET=your_super_secret_jwt_key
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_secret_key
+PORT=5000
+ADMIN_EMAIL=admin@pearlhotel.com
+ADMIN_PASSWORD=your_secure_admin_password
 ```
 
-**Start Server:**
-
+Start the backend server:
 ```bash
 npm run dev
 ```
 
-### 3. Frontend Setup
-
-Open a new terminal:
-
+### 4️⃣ Frontend Setup (Client)
+Open a new terminal, navigate to the client directory, and install dependencies:
 ```bash
 cd client
 npm install
 ```
 
-**Configure Environment Variables:**
-Create a `.env` file in the `client` directory (optional if defaults work):
-
+Create a `.env` file in the `client` directory:
 ```env
 REACT_APP_API_URL=http://localhost:5000/api
 ```
 
-**Start Client:**
-
+Start the frontend application:
 ```bash
 npm start
 ```
 
-### 4. Access the App
+### 🎉 You're all set! 
+The app should now be running at `http://localhost:3000`.
 
-- **Frontend:** `http://localhost:3000`
-- **Backend API:** `http://localhost:5000`
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" />
 
----
+## 🛡️ Security Measures
+- **Password Hashing:** All user passwords are encrypted using `bcryptjs`.
+- **Protected Routes:** Administrative and protected routes verify tokens via custom JWT middleware.
+- **Environment Variables:** Sensitive API keys (MongoDB, Razorpay) are kept strictly in `.env` files and ignored from Git.
 
-## 📸 Screenshots
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" />
 
-| Home Page             | Room Listing             |
-| --------------------- | ------------------------ |
-| *Add screenshot here* | *Add screenshot here*    |
+## 📬 Contact & Support
+If you have any questions, feedback, or issues, please feel free to open an issue or reach out to the maintainer.
 
-| Booking Flow          | Admin Dashboard          |
-| --------------------- | ------------------------ |
-| *Add screenshot here* | *Add screenshot here*    |
-
----
-
-## 🔐 Security Measures
-
-- **Input Validation:** All user inputs are validated on both client and server sides.
-- **Password Encryption:** User passwords are hashed using Bcrypt before storage.
-- **Protected Routes:** Middleware ensures sensitive admin routes are accessible only to authorized personnel.
-- **Secure Headers:** Helmet.js integrated for HTTP header security.
-- **Rate Limiting:** API rate limiting to prevent abuse.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the project.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
-
----
-
-## 📜 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-<p align="center">Made with ❤️ by the Pearl Hotel Dev Team</p>
+<div align="center">
+  <p>Made with ❤️ using the MERN Stack</p>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=100&section=footer" width="100%"/>
+</div>
