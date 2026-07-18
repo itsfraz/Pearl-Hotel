@@ -10,8 +10,13 @@ const createAdmin = async () => {
         await mongoose.connect(process.env.MONGO_URI);
         console.log('MongoDB Connected');
 
-        const email = 'admin@pearlhotel.com';
-        const password = 'adminpassword123';
+        const email = process.env.ADMIN_EMAIL || 'admin@pearlhotel.com';
+        const password = process.env.ADMIN_PASSWORD;
+
+        if (!password) {
+            console.error("Error: ADMIN_PASSWORD environment variable is not set.");
+            process.exit(1);
+        }
         
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
